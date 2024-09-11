@@ -83,7 +83,8 @@ def load_log(cfg):
 
         g = g.strip()
         g = brighten(g)
-        g = g.replace('*', '\033[93m•\033[39m')
+        if cfg['node_color'] and cfg['node_color'] != COLORS['default']:
+            g = g.replace('*', cfg['node_color'] + '*' + COLORS['default'])
         g = g.replace('\033[m', '\033[39m')
         commit['graph'] = g
 
@@ -144,6 +145,13 @@ def parse_arguments():
         default='cyan',
         metavar='')
     parser.add_argument(
+        '--ntig-node',
+        help='graph node color',
+        dest='node_color',
+        action='store',
+        default='bright-yellow',
+        metavar='')
+    parser.add_argument(
         '--ntig-log',
         help='log format',
         dest='log_fmt',
@@ -155,7 +163,7 @@ def parse_arguments():
     cfg = vars(args)
     cfg['log_args'] = unknown
 
-    for field in ['hash_color', 'date_color', 'author_color']:
+    for field in ['hash_color', 'date_color', 'author_color', 'node_color']:
         color = cfg[field]
         if color[0:4] == '\\033':
             color = '\033' + color[4:]
