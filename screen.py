@@ -152,7 +152,7 @@ class SelectionScreen(Screen):
                 else:
                     self.selected += self.height - 1
 
-            self.selected = max(0, min(len(self.lines), self.selected))
+            self.selected = max(0, min(len(self.lines) - 1, self.selected))
             if self.selected < self.y:
                 self.y = self.selected
             if self.selected > self.y + self.height - 1:
