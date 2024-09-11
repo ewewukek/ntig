@@ -10,6 +10,7 @@ options:
   --ntig-node       graph node color (default: bright-yellow)
   --ntig-date-fmt   date format (default: %d %b %H:%M)
   --ntig-log        log format (default: {hash} {date} {author} {graph} {message})
+  --ntig-pager      pager to pipe output of git show (default: none)
 
 other options will be passed to git log
 ```

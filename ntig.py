@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+
 from ansi_string import brighten, COLORS
 from datetime import datetime
 from screen import Screen, SelectionScreen
 import argparse
 import re
+import shlex
 import signal
 import subprocess
 import sys
@@ -35,7 +37,7 @@ def signal_handler(sig, frame):
             screen.update_size(True)
     else:
         restore_terminal()
-        sys.exit()
+        exit()
 
 
 def load_log(cfg):
@@ -106,10 +108,14 @@ def load_log(cfg):
     return log
 
 
-def show_commit(h):
-    p = subprocess.Popen(['git', 'show', '--color', h], stdout=subprocess.PIPE)
-    data = subprocess.check_output(['delta', '--color-only'], stdin=p.stdout)
-    p.wait()
+def show_commit(cfg, hash):
+    git_cmd = ['git', 'show', '--color', hash]
+    if cfg['pager']:
+        p = subprocess.Popen(git_cmd, stdout=subprocess.PIPE)
+        data = subprocess.check_output(cfg['pager'], stdin=p.stdout)
+        p.wait()
+    else:
+        data = subprocess.check_output(git_cmd)
 
     global screen
     prev_screen = screen
@@ -159,10 +165,21 @@ def parse_arguments():
         dest='log_fmt',
         default='{hash} {date} {author} {graph} {message}',
         metavar='')
+    parser.add_argument(
+        '--ntig-pager',
+        help='pager to pipe output of git show',
+        dest='pager',
+        default='none',
+        metavar='')
 
     args, unknown = parser.parse_known_args()
     cfg = vars(args)
     cfg['log_args'] = unknown
+
+    if cfg['pager'] == 'none':
+        cfg['pager'] = None
+    else:
+        cfg['pager'] = shlex.split(cfg['pager'])
 
     for field in ['hash_color', 'date_color', 'author_color', 'node_color']:
         color = cfg[field]
@@ -191,7 +208,7 @@ try:
 
     def action_fn(i):
         if log[i]['id']:
-            show_commit(log[i]['id'])
+            show_commit(cfg, log[i]['id'])
 
     log_lines = [cfg['log_fmt'].format(**c) for c in log]
     screen = SelectionScreen(log_lines, action_fn)
