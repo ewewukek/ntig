@@ -1,4 +1,6 @@
-Interactive git log with commit preview.
+Interactive git log with commit preview. Inspired by [Tig](https://jonas.github.io/tig/).
+
+Requires `termios` package.
 
 ![](screenshot.png?raw=true)
 
@@ -13,4 +15,9 @@ options:
   --ntig-pager      pager to pipe output of git show (default: none)
 
 other options will be passed to git log
+
+  h, H              - show help\r
+  q, Q              - exit\r
+  arrows, pgup/pgdn - navigate\r
+  enter             - select or close\r
 ```
