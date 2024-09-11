@@ -127,42 +127,36 @@ def parse_arguments():
         '--ntig-hash',
         help='hash color',
         dest='hash_color',
-        action='store',
         default='yellow',
         metavar='')
     parser.add_argument(
         '--ntig-date',
         help='date color',
         dest='date_color',
-        action='store',
         default='default',
         metavar='')
     parser.add_argument(
         '--ntig-author',
         help='author name color',
         dest='author_color',
-        action='store',
         default='cyan',
         metavar='')
     parser.add_argument(
         '--ntig-node',
         help='graph node color',
         dest='node_color',
-        action='store',
         default='bright-yellow',
         metavar='')
     parser.add_argument(
         '--ntig-date-fmt',
         help='date format',
         dest='date_fmt',
-        action='store',
         default='%d %b %H:%M',
         metavar='')
     parser.add_argument(
         '--ntig-log',
         help='log format',
         dest='log_fmt',
-        action='store',
         default='{hash} {date} {author} {graph} {message}',
         metavar='')
 
