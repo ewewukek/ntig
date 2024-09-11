@@ -21,6 +21,7 @@ input_map = {
     },
 }
 move_top_left = '\033[H'
+clear_screen = '\033[2J'
 clear_to_bottom = '\033[J'
 clear_to_right = '\033[K'
 reset_graphics = '\033[m'
@@ -35,6 +36,19 @@ def read_input():
         i = i.get(c, c)
         if isinstance(i, str):
             return i
+
+
+def show_help():
+    sys.stdout.write(clear_screen + move_top_left + """\r
+                HELP\r
+\r
+  h, H              - this screen\r
+  q, Q              - exit\r
+  arrows, pgup/pgdn - navigate\r
+  enter             - select or close\r
+""" + clear_to_bottom)
+    sys.stdout.flush()
+    read_input()
 
 
 class Screen:
@@ -98,6 +112,8 @@ class Screen:
             i = read_input()
             if i == 'q' or i == 'Q' or i == '\n':
                 return
+            if i == 'h' or i == 'H':
+                show_help()
             if i == 'left':
                 self.x -= self.width // 2
             if i == 'right':
@@ -134,6 +150,8 @@ class SelectionScreen(Screen):
                 self.action_fn(self.selected)
             if i == 'q' or i == 'Q':
                 return
+            if i == 'h' or i == 'H':
+                show_help()
             if i == 'left':
                 self.x -= self.width // 2
             if i == 'right':
