@@ -1,4 +1,4 @@
-from ansi_string import AnsiString
+from ansi_string import AnsiString, brighten
 import os
 import sys
 
@@ -75,6 +75,7 @@ class Screen:
 
             if hasattr(self, 'selected') and i == self.selected:
                 buf.append(enable_inverse_colors)
+                line = brighten(line)
                 line.parts.append(' ' * (self.width - len(line)))
 
             buf.append(str(line))

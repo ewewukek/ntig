@@ -23,6 +23,12 @@ COLORS = {
 
 
 def brighten(string):
+    if isinstance(string, AnsiString):
+        s = AnsiString('')
+        s.length = string.length
+        s.parts = [brighten(x) for x in string.parts]
+        return s
+
     string = string.replace('\033[31m', '\033[91m')
     string = string.replace('\033[32m', '\033[92m')
     string = string.replace('\033[33m', '\033[93m')
