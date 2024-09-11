@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from ansi_string import brighten, COLORS
 from datetime import datetime
 from screen import Screen, SelectionScreen
