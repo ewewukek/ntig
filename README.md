@@ -16,8 +16,8 @@ options:
 
 other options will be passed to git log
 
-  h, H              - show help\r
-  q, Q              - exit\r
-  arrows, pgup/pgdn - navigate\r
-  enter             - select or close\r
+  h, H              - show help
+  q, Q              - exit
+  arrows, pgup/pgdn - navigate
+  enter             - select or close
 ```
