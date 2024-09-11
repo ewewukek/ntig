@@ -1,6 +1,7 @@
 from ansi_string import brighten, COLORS
 from datetime import datetime
 from screen import Screen, SelectionScreen
+import argparse
 import re
 import signal
 import subprocess
@@ -23,7 +24,8 @@ def init_terminal():
 
 def restore_terminal():
     sys.stdout.write('\033[?1049l\033[?25h')
-    termios.tcsetattr(tty_fd, termios.TCSADRAIN, old_attrs)
+    if old_attrs:
+        termios.tcsetattr(tty_fd, termios.TCSADRAIN, old_attrs)
 
 
 def signal_handler(sig, frame):
@@ -42,6 +44,7 @@ def load_log(cfg):
             'log',
             '--graph',
             '--color',
+            *cfg['log_args'],
             '--pretty=format:%ad %aN %h %s',
             '--date=format:%s'
         ])
@@ -91,11 +94,10 @@ def load_log(cfg):
     for commit in log:
         for field in ['date', 'author', 'hash']:
             color = cfg[f'{field}_color']
-            if color and color[0:1] != '\033':
-                color = COLORS[color]
-            if color:
-                commit[field] = (color + commit[field] + COLORS['default']
-                                 + ' ' * (lengths[field] - len(commit[field])))
+            if color and color != COLORS['default']:
+                commit[field] = (
+                    color + commit[field] + COLORS['default']
+                    + ' ' * (lengths[field] - len(commit[field])))
             else:
                 commit[field] = commit[field].ljust(lengths[field])
 
@@ -114,18 +116,65 @@ def show_commit(h):
     screen = prev_screen
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        'ntig',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog='other options will be passed to git log')
+    parser.add_argument(
+        '--ntig-hash',
+        help='hash color',
+        dest='hash_color',
+        action='store',
+        default='yellow',
+        metavar='')
+    parser.add_argument(
+        '--ntig-date',
+        help='date color',
+        dest='date_color',
+        action='store',
+        default='default',
+        metavar='')
+    parser.add_argument(
+        '--ntig-author',
+        help='author name color',
+        dest='author_color',
+        action='store',
+        default='cyan',
+        metavar='')
+    parser.add_argument(
+        '--ntig-log',
+        help='log format',
+        dest='log_fmt',
+        action='store',
+        default='{hash} {date} {author} {graph} {message}',
+        metavar='')
+
+    args, unknown = parser.parse_known_args()
+    cfg = vars(args)
+    cfg['log_args'] = unknown
+
+    for field in ['hash_color', 'date_color', 'author_color']:
+        color = cfg[field]
+        if color[0:4] == '\\033':
+            color = '\033' + color[4:]
+        if color and color[0:1] != '\033':
+            if color in COLORS:
+                color = COLORS[color]
+            else:
+                print(f'unrecognized color: {color}', file=sys.stderr)
+                exit(1)
+        cfg[field] = color
+
+    return cfg
+
+
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGWINCH, signal_handler)
 
 try:
-    cfg = {
-        'hash_color': COLORS['yellow'],
-        'author_color': COLORS['cyan'],
-        'date_color': '',
-        'log_fmt': '{hash} {date} {author} {graph} {message}',
-    }
-
+    cfg = parse_arguments()
     log = load_log(cfg)
 
     init_terminal()
