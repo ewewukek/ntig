@@ -74,7 +74,7 @@ def load_log(cfg):
         if m := log_line_re.match(line):
             g = m.group(1)
             d = datetime.fromtimestamp(int(m.group(2)))
-            commit['date'] = d.strftime('%d %b %H:%M')
+            commit['date'] = d.strftime(cfg['date_fmt'])
             commit['author'] = m.group(3)
             commit['id'] = commit['hash'] = m.group(4)
             commit['message'] = m.group(5)
@@ -150,6 +150,13 @@ def parse_arguments():
         dest='node_color',
         action='store',
         default='bright-yellow',
+        metavar='')
+    parser.add_argument(
+        '--ntig-date-fmt',
+        help='date format',
+        dest='date_fmt',
+        action='store',
+        default='%d %b %H:%M',
         metavar='')
     parser.add_argument(
         '--ntig-log',
