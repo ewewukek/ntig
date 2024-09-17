@@ -1,6 +1,7 @@
 import re
 
 ANSI_SGR_RE = re.compile(r'^\033\[([0-9;]*)m')
+BRIGHTEN_RE = re.compile(r'\033\[3([0-7])')
 COLORS = {
     'default': '\033[39m',
     'black': '\033[30m',
@@ -37,14 +38,7 @@ def brighten(string):
         s.parts = [brighten(x) for x in string.parts]
         return s
 
-    string = string.replace('\033[31m', '\033[91m')
-    string = string.replace('\033[32m', '\033[92m')
-    string = string.replace('\033[33m', '\033[93m')
-    string = string.replace('\033[34m', '\033[94m')
-    string = string.replace('\033[35m', '\033[95m')
-    string = string.replace('\033[36m', '\033[96m')
-    string = string.replace('\033[37m', '\033[97m')
-    return string
+    return BRIGHTEN_RE.sub('\033[9\\g<1>', string)
 
 
 class AnsiString:
