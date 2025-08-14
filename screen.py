@@ -85,6 +85,7 @@ class Screen:
 
             line = self.lines[i].substr(self.x, self.width)
 
+            buf.append(clear_to_right)
             buf.append(reset_graphics)
 
             if hasattr(self, 'selected') and i == self.selected:
@@ -96,8 +97,6 @@ class Screen:
 
             if hasattr(self, 'selected') and i == self.selected:
                 buf.append(disable_inverse_colors)
-
-            buf.append(clear_to_right)
 
             if y < self.height - 1:
                 buf.append('\r\n')
