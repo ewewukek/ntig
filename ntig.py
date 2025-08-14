@@ -47,9 +47,9 @@ def load_log(cfg):
             'log',
             '--graph',
             '--color',
-            *cfg['log_args'],
             '--pretty=format:%ad %aN %h %s',
-            '--date=format:%s'
+            '--date=format:%s',
+            *cfg['log_args'],
         ])
 
         if '{refs}' in cfg['log_fmt']:
@@ -282,9 +282,9 @@ def parse_arguments():
         default='none',
         metavar='')
 
-    args, unknown = parser.parse_known_args()
+    args, pass_args = parser.parse_known_args()
     cfg = vars(args)
-    cfg['log_args'] = unknown
+    cfg['log_args'] = pass_args
 
     if cfg['pager'] == 'none':
         cfg['pager'] = None
